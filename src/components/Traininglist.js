@@ -10,7 +10,20 @@ export default function Traininglist() {
    const fetchData = () => {
        fetch('https://customerrest.herokuapp.com/gettrainings')
        .then(response => response.json())
-       .then(data => setTrainings(data))
+       .then(data => {
+         const editedData = data.map(training => {
+            return {
+              ...training,
+              date: moment(training.date).format('MMMM Do YYYY, h:mm a'),
+              customer: {
+                ...training.customer,
+                fullName: `${training.customer.firstname} ${training.customer.lastname}`
+              },
+            }
+          })
+
+          setTrainings(editedData)
+        })
    }
 
     return(
@@ -20,8 +33,7 @@ export default function Traininglist() {
             { title: 'Activity', field: 'activity' },
             { title: 'Date', field: 'date' },
             { title: 'Duration', field: 'duration' },
-            { title: 'First name', field: 'customer.firstname'},
-            { title: 'Last name', field: 'customer.lastname'}
+            { title: 'Name', field: 'customer.fullName'},
           ]}
           data={trainings}
           title="Trainings"
